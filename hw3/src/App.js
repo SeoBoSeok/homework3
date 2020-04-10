@@ -1,10 +1,21 @@
 import React, { Component } from "react";
 import axios from "axios";
+import { setupCache } from "axios-cache-adapter";
+
+// Create `axios-cache-adapter` instance
+const cache = setupCache({
+  maxAge: 15 * 60 * 1000,
+});
+
+const api = axios.create({
+  adapter: cache.adapter,
+});
 
 export default class App extends Component {
   state = {
     birthday: new Date().toISOString().slice(0, 10),
     data: "",
+    isLoading: false,
   };
 
   handleChange = (e) => {
@@ -60,9 +71,33 @@ export default class App extends Component {
       });
   };
 
+  getCacheData = () => {
+    this.setState({
+      isLoading: true,
+    });
+    // Send a GET request to some REST api
+    api({
+      url: "http://askat.me:8000/api/slow	",
+      method: "get",
+    }).then(async (response) => {
+      // Do something fantastic with response.data \o/
+      console.log("Request response:", response);
+
+      // Interacting with the store, see `localForage` API.
+      const length = await cache.store.length();
+
+      console.log("Cache store length:", length);
+
+      this.setState({
+        isLoading: false,
+      });
+    });
+  };
+
   render() {
     return (
       <div>
+        {this.state.isLoading && <div>Loading...</div>}
         <button onClick={this.getLottoNumber}>Lotto</button>
         <input
           name="birthday"
@@ -72,6 +107,7 @@ export default class App extends Component {
         />
         <button onClick={this.getFortuneNumber}>Fortune</button>
         <button onClick={this.getBadRequest}>Bad</button>
+        <button onClick={this.getCacheData}>Cache Data</button>
         {this.state.data}
       </div>
     );
