@@ -77,7 +77,7 @@ export default class App extends Component {
     });
     // Send a GET request to some REST api
     api({
-      url: "http://askat.me:8000/api/slow	",
+      url: "http://askat.me:8000/api/slow",
       method: "get",
     }).then(async (response) => {
       // Do something fantastic with response.data \o/
@@ -90,26 +90,33 @@ export default class App extends Component {
 
       this.setState({
         isLoading: false,
+        data: response.data,
       });
     });
   };
 
   render() {
     return (
-      <div>
-        {this.state.isLoading && <div>Loading...</div>}
-        <button onClick={this.getLottoNumber}>Lotto</button>
-        <input
-          name="birthday"
-          type="date"
-          onChange={this.handleChange}
-          value={this.state.birthday}
-        />
-        <button onClick={this.getFortuneNumber}>Fortune</button>
-        <button onClick={this.getBadRequest}>Bad</button>
-        <button onClick={this.getCacheData}>Cache Data</button>
-        {this.state.data}
-      </div>
+      <>
+        <center>{this.state.data}</center>
+        <div>
+          {this.state.isLoading && (
+            <center>
+              <img src="/puff.svg" />
+            </center>
+          )}
+          <button onClick={this.getLottoNumber}>Lotto</button>
+          <input
+            name="birthday"
+            type="date"
+            onChange={this.handleChange}
+            value={this.state.birthday}
+          />
+          <button onClick={this.getFortuneNumber}>Fortune</button>
+          <button onClick={this.getBadRequest}>Bad</button>
+          <button onClick={this.getCacheData}>Cache Data</button>
+        </div>
+      </>
     );
   }
 }
